@@ -817,7 +817,7 @@ function setChipFilter(key, btn){
 
   if(key==='all'){
     /* 全部：重置所有筛选 */
-    if(document.getElementById('f-dist')) document.getElementById('f-dist').value='';
+    /* 全部：只清 type/tier/status，不清区域 */
     typeFlt=''; tierFlt=''; statusFlt=null;
     /* 重置 chip 高亮，只亮「全部」 */
     document.querySelectorAll('.flt-chip').forEach(function(b){b.classList.remove('on')});
@@ -850,13 +850,11 @@ function setChipFilter(key, btn){
 }
 
 function _syncAllChip(){
-  /* 如果区域/类型/梯队都没选，高亮「全部」 */
-  var distVal=document.getElementById('f-dist')?document.getElementById('f-dist').value:'';
-  if(!distVal && !typeFlt && !tierFlt){
+  /* 「全部」chip 只管 type/tier，不管区域 dropdown */
+  if(!typeFlt && !tierFlt){
     var allBtn=document.getElementById('f-all');
     if(allBtn) allBtn.classList.add('on');
   } else {
-    /* 有任何条件时，去掉「全部」高亮 */
     var allBtn2=document.getElementById('f-all');
     if(allBtn2) allBtn2.classList.remove('on');
   }
