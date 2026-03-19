@@ -1310,38 +1310,32 @@ function openDZ(name){
   var appScheme='dianping://picassobox?picassoid=pexus-search-shoplist/main-bundle.js&target=searchshoplist&needcity=false&notitlebar=1&source=openclaw&keyword='+enc;
   var ua=navigator.userAgent;
   var isWx=/MicroMessenger/i.test(ua);
+  /* 微信内：无法唤起第三方App，先弹提示，再尝试复制关键词 */
   if(isWx){
-    /* 微信内：复制关键词 + 提示 */
     var kw=name+' 口碑';
-    function doToast(ok){
-      showToast(ok?'已复制「'+kw+'」\n打开大众点评 App 搜索即可 🍴':'请去大众点评 App 搜索：'+kw);
-    }
-    if(navigator.clipboard&&navigator.clipboard.writeText){
-      navigator.clipboard.writeText(kw).then(function(){doToast(true);}).catch(function(){doToast(false);});
-    } else {
-      try{
+    showToast('请在浏览器中打开后使用点评功能\n或去大众点评 App 搜索：'+kw);
+    try{
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(kw).catch(function(){});
+      } else {
         var ta=document.createElement('textarea');
         ta.value=kw;document.body.appendChild(ta);ta.select();
         document.execCommand('copy');document.body.removeChild(ta);
-        doToast(true);
-      }catch(e){doToast(false);}
-    }
-  } else {
-    /* 非微信：直接用 window.open 打开网页版 */
-    var win=window.open(webUrl,'_blank');
-    if(!win||win.closed||typeof win.closed==='undefined'){
-      /* 弹窗被拦截时降级跳转 */
-      window.location.href=webUrl;
-    }
-    /* 同时尝试唤起 App */
-    try{
-      var iframe=document.createElement('iframe');
-      iframe.style.display='none';
-      iframe.src=appScheme;
-      document.body.appendChild(iframe);
-      setTimeout(function(){document.body.removeChild(iframe);},2000);
+      }
     }catch(e){}
+    return;
   }
+  /* 非微信：先尝试 App scheme，直接跳网页版（location.href 最可靠） */
+  try{
+    var iframe=document.createElement('iframe');
+    iframe.style.display='none';
+    iframe.src=appScheme;
+    document.body.appendChild(iframe);
+    setTimeout(function(){
+      if(document.body.contains(iframe)) document.body.removeChild(iframe);
+    },2000);
+  }catch(e){}
+  window.location.href=webUrl;
 }
 function openXHS(name){
   var kw=name+' 口碑';
