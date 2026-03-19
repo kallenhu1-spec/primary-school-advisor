@@ -955,7 +955,7 @@ function toggleDetail(name){
   if(!w)return;
   if(w.style.display==='block'){w.style.display='none';if(eh)eh.style.transform='';var hd=document.getElementById('hint-'+enc);if(hd)hd.classList.remove('expanded');openName=null;return;}
   if(!w.dataset.loaded){w.innerHTML=buildDetail(name);w.dataset.loaded='1';}
-  w.style.display='block';w.classList.add('show');
+  w.style.display='block';w.classList.add('show');w.scrollTop=0;
   if(eh)eh.style.transform='rotate(90deg)';
   var hd2=document.getElementById('hint-'+enc);if(hd2)hd2.classList.add('expanded');
   openName=name;
