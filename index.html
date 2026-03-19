@@ -1404,19 +1404,19 @@ function loadForm(){
     if(data['f-type']) typeFlt=data['f-type'];
     if(data['tierFlt']) tierFlt=data['tierFlt'];
     if(data['statusFlt']) statusFlt=data['statusFlt'];
-    /* 恢复 chip 高亮 */
+    /* 恢复 chip 高亮（区域已改为 select，只需同步 type/tier chip） */
     var chips=document.querySelectorAll('.flt-chip');
-    var fd2=document.getElementById('f-dist');
-    var ft2=document.getElementById('f-type');
-    var distVal=fd2?fd2.value:'';
-    var typeVal=ft2?ft2.value:'';
     chips.forEach(function(b){b.classList.remove('on');});
-    if(distVal){
-      chips.forEach(function(b){if(b.getAttribute('onclick')&&b.getAttribute('onclick').indexOf('dist:'+distVal)>-1)b.classList.add('on');});
-    } else if(typeVal){
-      chips.forEach(function(b){if(b.getAttribute('onclick')&&b.getAttribute('onclick').indexOf('type:'+typeVal)>-1)b.classList.add('on');});
+    if(typeFlt){
+      chips.forEach(function(b){
+        var oc=b.getAttribute('onclick')||'';
+        if(oc.indexOf('type:'+typeFlt)>-1) b.classList.add('on');
+      });
     } else if(tierFlt){
-      chips.forEach(function(b){if(b.getAttribute('onclick')&&b.getAttribute('onclick').indexOf('tier:'+tierFlt)>-1)b.classList.add('on');});
+      chips.forEach(function(b){
+        var oc=b.getAttribute('onclick')||'';
+        if(oc.indexOf('tier:'+tierFlt)>-1) b.classList.add('on');
+      });
     } else {
       var allBtn=document.getElementById('f-all');
       if(allBtn) allBtn.classList.add('on');
