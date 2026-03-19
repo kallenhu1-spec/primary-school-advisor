@@ -977,7 +977,7 @@ function buildDetail(name){
       +'<span class="dz-guide-tag">👩‍👧 家长口碑</span>'
       +'<span class="dz-guide-tag">📞 咨询电话</span>'
       +'</div>'
-      +'<button class="dz-guide-btn" onclick="openDZ('+JSON.stringify(name)+')" type="button">'+DZ_IMG+' 去大众点评查看该校信息</button>'
+      +'<button class="dz-guide-btn" onclick="openDZ(this.dataset.name)" data-name="'+name+'" type="button">'+DZ_IMG+' 去大众点评查看该校信息</button>'
       +'</div>';
   }
 
