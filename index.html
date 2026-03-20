@@ -940,7 +940,7 @@ tr:hover>td{background:#fafbff}
       </div>
       <div class="tabs">
         <button class="tb on" onclick="showTab(1)">📋 学校列表</button>
-        <button class="tb" onclick="showTab(2)">📊 2025年中签率对比</button>
+        <button class="tb" onclick="showTab(2)">📊 2025中签率</button>
       </div>
       <div class="tc on" id="tc1">
         <div style="margin-bottom:8px;position:relative">
@@ -982,33 +982,40 @@ tr:hover>td{background:#fafbff}
       </div>
       <div id="school-cards" style="padding:0 4px"></div>
       <div class="tc" id="tc2">
-        <div style="font-size:12px;color:#888;padding:6px 2px 10px;line-height:1.5">
+        <!-- 说明条 -->
+        <div style="font-size:11.5px;color:#999;background:#f8f9ff;border-radius:8px;padding:7px 10px;margin-bottom:10px;line-height:1.6;border-left:3px solid #c5ceff">
           📊 数据来源：2025年上海民办小学公示数据（非官方整理，仅供参考）<br>
-          <span style="color:#e74c3c">⚠️ 最大报名数为测算值，实际以学校官方公告为准</span>
+          ⚠️ 最大报名数为测算值，实际中签率以学校官方公告为准 &nbsp;|&nbsp; 点击表头可排序
         </div>
-        <!-- 子Tab：表格 / 图表 -->
+        <!-- 子Tab切换 -->
         <div style="display:flex;gap:6px;margin-bottom:10px">
           <button id="lt-tab-tbl" onclick="showLtTab('tbl')"
-            style="flex:1;padding:6px 0;border-radius:8px;border:1.5px solid #4361ee;background:#4361ee;color:#fff;font-size:13px;cursor:pointer;font-weight:600">📋 数据表格</button>
+            style="flex:1;padding:7px 0;border-radius:8px;border:1.5px solid #4361ee;background:#4361ee;color:#fff;font-size:13px;cursor:pointer;font-weight:600;transition:all .15s">📋 数据表格</button>
           <button id="lt-tab-chart" onclick="showLtTab('chart')"
-            style="flex:1;padding:6px 0;border-radius:8px;border:1.5px solid #e0e4ff;background:#fff;color:#4361ee;font-size:13px;cursor:pointer">📊 柱状图</button>
+            style="flex:1;padding:7px 0;border-radius:8px;border:1.5px solid #e0e4ff;background:#fff;color:#4361ee;font-size:13px;cursor:pointer;transition:all .15s">📊 柱状图</button>
         </div>
-        <!-- 表格 -->
+        <!-- 图例说明 -->
+        <div style="display:flex;gap:10px;flex-wrap:wrap;font-size:11.5px;color:#666;margin-bottom:8px;padding:0 2px">
+          <span>🍀 全录（无需摇号）</span>
+          <span>🌟 超额摇号</span>
+          <span style="color:#bbb">· 无 = 暂无数据</span>
+        </div>
+        <!-- 数据表格 -->
         <div id="lt-tbl-wrap" style="overflow-x:auto">
-          <table id="lt-table" style="width:100%;border-collapse:collapse;font-size:13px">
+          <table id="lt-table" style="width:100%;border-collapse:collapse;font-size:13px;min-width:340px">
             <thead>
-              <tr style="background:#f0f3ff;color:#4361ee">
-                <th style="padding:7px 6px;text-align:left;border-bottom:2px solid #dde3ff;white-space:nowrap">学校名称</th>
-                <th style="padding:7px 6px;text-align:center;border-bottom:2px solid #dde3ff;white-space:nowrap">区</th>
-                <th style="padding:7px 6px;text-align:center;border-bottom:2px solid #dde3ff;white-space:nowrap;cursor:pointer" onclick="sortLtTable('rec')" title="点击排序">录取数 ↕</th>
-                <th style="padding:7px 6px;text-align:center;border-bottom:2px solid #dde3ff;white-space:nowrap;cursor:pointer" onclick="sortLtTable('max')" title="点击排序">最大报名数 ↕</th>
-                <th style="padding:7px 6px;text-align:center;border-bottom:2px solid #dde3ff;white-space:nowrap;cursor:pointer" onclick="sortLtTable('rate')" title="点击排序">中签率 ↕</th>
+              <tr style="background:#f0f3ff;color:#4361ee;font-size:12px">
+                <th style="padding:8px 6px;text-align:left;border-bottom:2px solid #dde3ff;white-space:nowrap">学校名称</th>
+                <th style="padding:8px 4px;text-align:center;border-bottom:2px solid #dde3ff;white-space:nowrap;color:#888">区</th>
+                <th style="padding:8px 6px;text-align:center;border-bottom:2px solid #dde3ff;white-space:nowrap;cursor:pointer" onclick="sortLtTable('rec')" title="点击排序">录取数&nbsp;↕</th>
+                <th style="padding:8px 6px;text-align:center;border-bottom:2px solid #dde3ff;white-space:nowrap;cursor:pointer" onclick="sortLtTable('max')" title="点击排序">最大报名&nbsp;↕</th>
+                <th style="padding:8px 6px;text-align:center;border-bottom:2px solid #dde3ff;white-space:nowrap;cursor:pointer" onclick="sortLtTable('rate')" title="点击排序">中签率&nbsp;↕</th>
               </tr>
             </thead>
             <tbody id="lt-tbody"></tbody>
           </table>
         </div>
-        <!-- 图表 -->
+        <!-- 柱状图 -->
         <div id="lt-chart-wrap" style="display:none"><div class="chw"><canvas id="ch"></canvas></div></div>
       </div>
     </div>
@@ -1523,45 +1530,70 @@ function showLtTab(tab){
 function sortLtTable(key){
   if(_ltSortKey===key){ _ltSortAsc=!_ltSortAsc; }
   else { _ltSortKey=key; _ltSortAsc=(key==='rate'); }
+  // 更新表头箭头
+  var cols={rec:2,max:3,rate:4};
+  var tbl=document.getElementById('lt-table');
+  if(tbl){
+    var ths=tbl.querySelectorAll('thead th');
+    ths.forEach(function(th,i){th.style.color=(i===cols[_ltSortKey])?'#4361ee':'';});
+  }
   renderLtTable(curList);
 }
 function renderLtTable(list){
   var tbody=document.getElementById('lt-tbody');
   if(!tbody)return;
   var src=(list&&list.length?list:SD);
-  // 合并 SD 数据 + LT 数据
   var rows=[];
   src.forEach(function(s){
-    if(s[2]!=='pri')return; // 只展示民办
+    if(s[2]!=='pri')return;
     var lt=LT[s[0]]||{};
     var rec=lt.rec||null;
     var max=lt.max||null;
     var rate=lt.rate!=null?lt.rate:(s[9]==='cool'?100:null);
-    rows.push({name:s[0],dist:s[1],rec:rec,max:max,rate:rate,st:s[9]});
+    rows.push({name:s[0],dist:s[1],tier:s[10],rec:rec,max:max,rate:rate,st:s[9]});
   });
-  // 只展示有录取数或中签率数据的行
   rows=rows.filter(function(r){return r.rec||r.rate!==null;});
-  // 排序
   var k=_ltSortKey;
   rows.sort(function(a,b){
     var va=a[k]!=null?a[k]:(_ltSortAsc?9999:-9999);
     var vb=b[k]!=null?b[k]:(_ltSortAsc?9999:-9999);
     return _ltSortAsc?(va-vb):(vb-va);
   });
-  var DN2={"pudong":"浦东","minhang":"闵行","xuhui":"徐汇","changning":"长宁","jingan":"静安","huangpu":"黄浦","putuo":"普陀","yangpu":"杨浦","baoshan":"宝山","jiading":"嘉定","qingpu":"青浦","songjiang":"松江","jinshan":"金山","chongming":"崇明","fengxian":"奉贤","minhang":"闵行"};
+  var DN2={"pudong":"浦东","minhang":"闵行","xuhui":"徐汇","changning":"长宁","jingan":"静安","huangpu":"黄浦","putuo":"普陀","yangpu":"杨浦","baoshan":"宝山","jiading":"嘉定","qingpu":"青浦","songjiang":"松江","jinshan":"金山","chongming":"崇明","fengxian":"奉贤"};
   var html='';
   rows.forEach(function(r,i){
-    var bg=i%2===0?'#fff':'#f8f9ff';
-    var rateStr=r.rate!==null?(r.rate===100?'<span style="color:#27ae60;font-weight:700">🍀全录</span>':r.rate.toFixed(1)+'%'):'<span style="color:#bbb">无</span>';
-    var maxStr=r.max?r.max:'<span style="color:#bbb">无</span>';
-    var recStr=r.rec?r.rec:'<span style="color:#bbb">无</span>';
-    var hotBadge=r.st==='hot'?'<span style="font-size:10px;background:#fff3cd;color:#e67e22;border-radius:4px;padding:1px 4px;margin-left:3px">🌟摇号</span>':'';
+    var bg=i%2===0?'#fff':'#f7f8ff';
+    // 中签率颜色分级
+    var rateHtml='<span style="color:#bbb">—</span>';
+    if(r.rate!==null){
+      if(r.rate===100){
+        rateHtml='<span style="color:#27ae60;font-weight:700">🍀全录</span>';
+      } else {
+        var clr=r.rate<20?'#e74c3c':r.rate<40?'#e67e22':r.rate<60?'#f39c12':r.rate<80?'#27ae60':'#16a085';
+        var bar=Math.round(r.rate);
+        rateHtml='<div style="display:flex;align-items:center;gap:4px;justify-content:center">'
+          +'<div style="width:40px;height:6px;border-radius:3px;background:#eee;overflow:hidden;flex-shrink:0">'
+          +'<div style="width:'+bar+'%;height:100%;background:'+clr+';border-radius:3px"></div></div>'
+          +'<span style="color:'+clr+';font-weight:600;font-size:12px">'+r.rate.toFixed(1)+'%</span>'
+          +'</div>';
+      }
+    }
+    var maxStr=r.max?('<span style="font-size:12px">'+r.max+'</span>'):'<span style="color:#bbb">—</span>';
+    var recStr=r.rec?r.rec:'<span style="color:#bbb">—</span>';
+    var badge='';
+    if(r.st==='hot') badge='<span style="font-size:10px;background:#fff3cd;color:#e67e22;border-radius:4px;padding:1px 4px;margin-left:3px;white-space:nowrap">🌟摇号</span>';
+    if(r.st==='cool') badge='<span style="font-size:10px;background:#e8f8f0;color:#27ae60;border-radius:4px;padding:1px 4px;margin-left:3px;white-space:nowrap">🍀全录</span>';
+    var tierClr=r.tier==='T1'?'#4361ee':r.tier==='T2'?'#7c83fd':'#aaa';
+    var distStr='<span style="font-size:11px;color:#888">'+(DN2[r.dist]||r.dist)+'</span>';
     html+='<tr style="background:'+bg+'">'
-      +'<td style="padding:6px 6px;border-bottom:1px solid #eef0ff">'+r.name+hotBadge+'</td>'
-      +'<td style="padding:6px 6px;text-align:center;border-bottom:1px solid #eef0ff;color:#666;font-size:12px">'+(DN2[r.dist]||r.dist)+'</td>'
-      +'<td style="padding:6px 6px;text-align:center;border-bottom:1px solid #eef0ff">'+recStr+'</td>'
-      +'<td style="padding:6px 6px;text-align:center;border-bottom:1px solid #eef0ff">'+maxStr+'</td>'
-      +'<td style="padding:6px 6px;text-align:center;border-bottom:1px solid #eef0ff;font-weight:600">'+rateStr+'</td>'
+      +'<td style="padding:7px 6px;border-bottom:1px solid #eef0ff;line-height:1.3">'
+      +'<span style="font-size:13px">'+r.name+'</span>'+badge
+      +'<div style="font-size:10px;color:'+tierClr+';margin-top:1px">'+r.tier+'</div>'
+      +'</td>'
+      +'<td style="padding:7px 4px;text-align:center;border-bottom:1px solid #eef0ff">'+distStr+'</td>'
+      +'<td style="padding:7px 6px;text-align:center;border-bottom:1px solid #eef0ff;font-size:13px">'+recStr+'</td>'
+      +'<td style="padding:7px 6px;text-align:center;border-bottom:1px solid #eef0ff">'+maxStr+'</td>'
+      +'<td style="padding:7px 6px;text-align:center;border-bottom:1px solid #eef0ff">'+rateHtml+'</td>'
       +'</tr>';
   });
   tbody.innerHTML=html||'<tr><td colspan="5" style="text-align:center;color:#999;padding:20px">当前筛选范围内暂无数据</td></tr>';
