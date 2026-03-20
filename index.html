@@ -981,7 +981,36 @@ tr:hover>td{background:#fafbff}
         </div>
       </div>
       <div id="school-cards" style="padding:0 4px"></div>
-      <div class="tc" id="tc2"><div class="chw"><canvas id="ch"></canvas></div></div>
+      <div class="tc" id="tc2">
+        <div style="font-size:12px;color:#888;padding:6px 2px 10px;line-height:1.5">
+          📊 数据来源：2025年上海民办小学公示数据（非官方整理，仅供参考）<br>
+          <span style="color:#e74c3c">⚠️ 最大报名数为测算值，实际以学校官方公告为准</span>
+        </div>
+        <!-- 子Tab：表格 / 图表 -->
+        <div style="display:flex;gap:6px;margin-bottom:10px">
+          <button id="lt-tab-tbl" onclick="showLtTab('tbl')"
+            style="flex:1;padding:6px 0;border-radius:8px;border:1.5px solid #4361ee;background:#4361ee;color:#fff;font-size:13px;cursor:pointer;font-weight:600">📋 数据表格</button>
+          <button id="lt-tab-chart" onclick="showLtTab('chart')"
+            style="flex:1;padding:6px 0;border-radius:8px;border:1.5px solid #e0e4ff;background:#fff;color:#4361ee;font-size:13px;cursor:pointer">📊 柱状图</button>
+        </div>
+        <!-- 表格 -->
+        <div id="lt-tbl-wrap" style="overflow-x:auto">
+          <table id="lt-table" style="width:100%;border-collapse:collapse;font-size:13px">
+            <thead>
+              <tr style="background:#f0f3ff;color:#4361ee">
+                <th style="padding:7px 6px;text-align:left;border-bottom:2px solid #dde3ff;white-space:nowrap">学校名称</th>
+                <th style="padding:7px 6px;text-align:center;border-bottom:2px solid #dde3ff;white-space:nowrap">区</th>
+                <th style="padding:7px 6px;text-align:center;border-bottom:2px solid #dde3ff;white-space:nowrap;cursor:pointer" onclick="sortLtTable('rec')" title="点击排序">录取数 ↕</th>
+                <th style="padding:7px 6px;text-align:center;border-bottom:2px solid #dde3ff;white-space:nowrap;cursor:pointer" onclick="sortLtTable('max')" title="点击排序">最大报名数 ↕</th>
+                <th style="padding:7px 6px;text-align:center;border-bottom:2px solid #dde3ff;white-space:nowrap;cursor:pointer" onclick="sortLtTable('rate')" title="点击排序">中签率 ↕</th>
+              </tr>
+            </thead>
+            <tbody id="lt-tbody"></tbody>
+          </table>
+        </div>
+        <!-- 图表 -->
+        <div id="lt-chart-wrap" style="display:none"><div class="chw"><canvas id="ch"></canvas></div></div>
+      </div>
     </div>
   </div>
 
@@ -1017,6 +1046,53 @@ tr:hover>td{background:#fafbff}
 <script>var DZ_IMG='<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAADKklEQVR4nG2UTWjcVRTFf/e+N5OZZMZkbNNmYZqiOGmKGG3qF1hMxUXcdFcoghTponQRa+guC6EILtSU6kIF6c5Q3LQLEVQQLS0ihUJjxVrTxjEljdavlGQ+Mv9577r4T5oWchfv8R6Xc+4997wnZmatW3PY6ZPI3BU0RrAI9SqIQK4r3QFEwSJiRnSeuH0HcuANfH8ZSRauG+8dxf1zC+ssIq2E4DOw82kILeTniwhtoNUaZHPgM2CGNKq0SluQifeR1alx8zMXoFiCpEn0Hnt9Cj+4C4Dk0rfox5NIoUR84nmoXMXNz0K2A9RB9Q5x6ClUb/wI+QKYQbOBjYySGdyFhASJgczIXuL2IeK+Q/iDk1AehmYjbTO0IFdAKlfxGmJadnMVlpfSBABry9JeNZtDYoAQ796uJYqBrh1jXz9h32vY5fO0rl0Cn8GcI7n4Nfw5jzz2DKYOFivg3TpTOzxmRKcw/g6ZLdtItpUJHxzDHnkcWgn2+zXk0Jto92Zacz+hszOQL0IM9wFJOPKCUa8Sdr+IO/I2qo7wxzzMXEinMzKK6+klJk2SU8fx33+BqId8V7szawMd3mOIQm2Z1u69uP3juL6B+9gwAxGsXiUuVojnzqDnP0cyHaCaWiEc3pNCqkJtBSt0E8pPoq8cw5d6wXmiGawsIYUeRAQDWj98iZ56C3GurdFdtSMUupE7f0PPJlypF3Oe5JvPkO/OIsv/QWcRe24M//JBMs+O0Vz6Cz89BQ+U1qeGCLLaIGztx+0fR5wnOfMh7pPj+MUKWq/ibi/gpk+QfPouBmTGXiU8Ogz16j0ViWKrddjxEpovEBZ/Q7+aRku9mAhEwzIeHtyKO3eW1shoasikCar3AEH6IHsfQsyw61eQeg0r9kAI66IbSEce+WgSqa0gzkO2A2/qUseumdVCOoVcZ3sibBgaQvq0ADND48M70y9DPahiCxVMlbi5D8t3pSQbhUhKVF8hDpSR5Oavxomj6L+3IZvDuoqE8jA6exmt1TYGSZGgUSV2b8ImTiLRzMLNWez0FFr5BQktaNSQbB5re2SjMBHiwCAcmCCzfYj/AQaTVPl4QJzoAAAAAElFTkSuQmCC" style="width:18px;height:18px;border-radius:4px;flex-shrink:0;vertical-align:middle">';
 var MAP_IMG='<img src="data:image/png;base64,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" style="width:18px;height:18px;border-radius:4px;flex-shrink:0;vertical-align:middle">';
 var XHS_IMG='<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAIAAABuYg/PAAAEzUlEQVR42u2WT2xURRzHf795M/vebrfbUlvaYrVV2koLFCUBy5VeJK0JiNEeIGqCpBoSDILcaBo00YsmklAq9cAJMBoOJE2TNhQkIVTppYmNut1aC7aWfQvt7r63b9+bNz8Pr//QeuCCienkHSaT38zn937zne8M/rThaXhSjcETbGuwNdga7D+DMQaMPcZ40BCBMUB8PBjZtspmQam/rUW2rTIZUAoYQ84XPw0AkHOSUmUyJCUKESCR85XJ8dVQZGzZguFwPh4n216IRiQpja1bWSyWHxuTpkmeFwQDMm1dsUwmRfWzem1dPh53Jya0oiIUQpomMwwMh4EIAHDZiBGRMUBUjlN7fUhvaEjsbsmNjmrRKCilLCtUX1d786acmfl1x87ClpbIyzuBCBhTlpXq7i58ZU/JO29Hmpvt27czAwPZgcH8xETZB0ez14bs4WGMREApvlxu35dzc6hpaBjk+0AEiMqyyHW1ggLlOKVHjiDn0ydOOLN/Vr22t2j/60u1MM+eLfvwmF5fT54XaW6ONDeXHDr0oKen7PhxUVWVHRri0SgptVgi1+Xr1z/Te77ys0+RsQWSbZUcPPDMVz3G1i16XW3x/v3Kysba2p7r7U31fp3qPkeu64yN3evoAEXTx0+k+/qQ8/krVzL9/aKyEiORe4cPJz//ghXGyPcXBcIY5V1RXV3c3h5rbSXPC7aXHEdvbCxubzeammJtbWgYKELrDhwIbdyY7u9PX72KoZCbSKR6elhBgXX9ujM6Coi5kRF7eBiU8pPJ5PnzbiKBeijYMwYACABKaUVFJP18IqHy+UVRMDc+Tr4vKjfMXf7mj6NHlW0r2545eVLTDa24CADQMJDzWGvr5vuzpceOAUB5V1d5ZycwVn769KaREb1hEzlOsCBbFKBikTByTWUy4PsLwmVM3r+PmiY2VObG43J6hkWj1o0b0jTRMJbUGGywchwIRjzPT6WkaQJiePv2pzo6lGXhMgwRiPT6elBKJpOBMAEAOPdmZ4FIVFXxaLTik4+R88I9e4rfeNPPZIBzACDf1wpj6b6+n1/YZH55BgDMnp5fmpriO3bMdnWBUswwgGlBGQM1EgCQ5wFj9p07MmeT5wERCiGnpwEREMj1Hl64EKqrBenPXbqEyCiXAwCQknI5ZVn+3Dw5DgBQPu+bKd/N58fHAZFWOEOQnWKRgrmLF6Mtu3M/3qk8dUorKwNEDIXcqanstWvmmTOxV9tibW2kVHZwMPzSi9WXL7GCAiCK7Nq18fsb1q1b0x+dBCEAgDwpamoq339PVNcAIgoBpFY4CBGGhEyaUwffUvPzRfv2iYoK+4dhNx7nJSV33z0MUj4/OKDX1QFAqvtceWdneNu2hfmlpby01E+nyZeLFqX5cw9je/eGqqv9dHr+2+9QiIXD/MhTTilSCoUwGhvy4wmVzaKuk+excDhUUwOI4Et38ndjcyN5EhCAMVAERP78vDs5ySsqRPl6aZru1F1mGEZjo3yQcn+bZJHIP+wqUAoAKKVyOWYYoGnB6QallOMEAUzXlZ2DR50dOQ/SIs8L+uD7KpdDIVDXlwwdV3mkIgb6DNJZvlwW/36VWyYIXjlxtUVWd/1HMEuMVfv/NnG1RdbeIGuwNdj/DPYX3EBv25NksS0AAAAASUVORK5CYII=" style="width:18px;height:18px;border-radius:4px;flex-shrink:0;vertical-align:middle">';
+var LT={
+  "民办打一外国语小学":{"rec":151,"max":344,"rate":43.9},
+  "杨浦双语学校":{"rec":215,"max":400,"rate":53.8},
+  "存志实验小学":{"rec":120,"max":null,"rate":null},
+  "同大实验小学":{"rec":147,"max":324,"rate":45.4},
+  "长阳实验小学":{"rec":153,"max":null,"rate":null},
+  "沪东外国语学校":{"rec":118,"max":162,"rate":72.8},
+  "阳浦小学":{"rec":225,"max":225,"rate":100},
+  "民办平和双语学校":{"rec":128,"max":null,"rate":42.0},
+  "民办正达外国语小学":{"rec":217,"max":null,"rate":19.0},
+  "向未来外国语小学":{"rec":153,"max":null,"rate":30.0},
+  "未来科技学校":{"rec":163,"max":null,"rate":19.0},
+  "民办金苹果学校":{"rec":119,"max":119,"rate":85.0},
+  "民办惠立学校":{"rec":108,"max":null,"rate":87.0},
+  "民办筑桥实验小学":{"rec":107,"max":null,"rate":90.0},
+  "民办尚德实验学校（一类统招）":{"rec":290,"max":null,"rate":96.0},
+  "启能东方外国语学校":{"rec":53,"max":null,"rate":null},
+  "民办万科双语实验学校":{"rec":107,"max":null,"rate":null},
+  "星河湾双语学校":{"rec":40,"max":147,"rate":null},
+  "闵行协和双语学校":{"rec":20,"max":null,"rate":null},
+  "博世凯双语学校":{"rec":160,"max":null,"rate":null},
+  "德英乐实验学校":{"rec":110,"max":802,"rate":13.7},
+  "七宝外国语小学":{"rec":230,"max":2200,"rate":10.5},
+  "万源城协和双语学校":{"rec":116,"max":216,"rate":53.7},
+  "世界外国语小学":{"rec":107,"max":510,"rate":21.0},
+  "盛大花园小学":{"rec":178,"max":null,"rate":23.0},
+  "逸夫小学":{"rec":196,"max":769,"rate":25.5},
+  "爱菊小学":{"rec":128,"max":300,"rate":42.7},
+  "包玉刚实验学校":{"rec":46,"max":116,"rate":39.7},
+  "东展小学（民办）":{"rec":143,"max":null,"rate":null},
+  "新世纪小学":{"rec":92,"max":null,"rate":100},
+  "宏星小学":{"rec":140,"max":446,"rate":31.4},
+  "尚外外国语学校":{"rec":171,"max":417,"rate":41.0},
+  "民办四中心实验小学":{"rec":103,"max":224,"rate":46.0},
+  "培佳双语学校":{"rec":200,"max":null,"rate":60.0},
+  "金洲小学":{"rec":235,"max":340,"rate":69.1},
+  "桃李园实验学校（小学部）":{"rec":156,"max":null,"rate":20.0},
+  "华旭双语学校（小学部）":{"rec":90,"max":null,"rate":null},
+  "嘉定世外学校（小学部）":{"rec":112,"max":null,"rate":null},
+  "宝山世外学校":{"rec":10,"max":null,"rate":40.0},
+  "华曜宝山实验学校":{"rec":63,"max":null,"rate":35.0},
+  "上海宝山区世外学校":{"rec":10,"max":null,"rate":40.0},
+  "上海同洲模范学校":{"rec":120,"max":180,"rate":65.0},
+  "青浦兰生学校":{"rec":101,"max":null,"rate":40.0},
+  "青浦世外（普通班）":{"rec":20,"max":null,"rate":7.0},
+  "金山世外学校":{"rec":50,"max":null,"rate":null}
+};
 var TF={"民办惠立学校": {"term": 85000, "note": "2025年9月起，↑2000/学期"}, "民办平和双语学校": {"term": 51000, "note": "2025年9月起，↑1000/学期"}, "民办宏文学校": {"term": 65000, "note": "2025年9月起，住宿13000/学期"}, "民办万科双语实验学校": {"term": 74000, "note": "2025年9月起，住宿9000/学期"}, "正达外国语小学": {"term": 43000, "note": "2025年9月起，↑调整"}, "民办沪港学校": {"term": 80000, "note": "2025年9月起"}, "启能东方外国语学校": {"term": 35000, "note": "2025年9月起"}, "民办启能东方金融城学校": {"term": 35000, "note": "2025年9月起"}, "民办协和双语学校": {"term": 20000, "note": "含政府购买学位校，实际费用低"}, "民办向明双语学校": {"term": 15000, "note": "政府购买学位"}, "民办筑桥实验小学": {"term": 18000, "note": "政府购买学位"}, "民办打一外国语小学": {"term": 21500, "note": "2025年9月起调整，官方文件"}, "杨浦双语学校": {"term": 26400, "note": "2025年9月起，↑调整"}, "存志学校": {"term": 32800, "note": "2025年9月起调整"}, "包玉刚实验学校": {"term": 84000, "note": "约8.4万/学期"}, "东展小学（民办）": {"term": 8000, "note": "政府购买学位，费用较低"}, "新世纪小学": {"term": 12000, "note": "精致小班，约1.2万/学期"}, "星河湾双语学校": {"term": 28000, "note": "约2.8万/学期"}, "七宝外国语小学": {"term": 0, "note": "政府购买学位，0元入读"}, "闵行协和双语学校": {"term": 20000, "note": "协和体系，政府购买学位"}, "万源城协和双语学校": {"term": 20000, "note": "协和体系，政府购买学位"}, "德英乐学校": {"term": 25000, "note": "万科背景，约2.5万/学期"}, "博世凯双语学校": {"term": 22000, "note": "约2.2万/学期"}, "世界外国语小学": {"term": 30000, "note": "约3万/学期"}, "盛大花园小学": {"term": 25000, "note": "约2.5万/学期"}, "逸夫小学": {"term": 28000, "note": "约2.8万/学期"}, "爱菊小学": {"term": 22000, "note": "约2.2万/学期"}, "扬波外国语小学": {"term": 8000, "note": "政府购买学位"}, "彭浦民办小学": {"term": 6000, "note": "政府购买学位，费用极低"}, "嘉定世外学校（小学部）": {"term": 35000, "note": "嘉定世外约3.5万/学期"}, "桃李园实验学校（小学部）": {"term": 18000, "note": "约1.8万/学期"}, "华旭双语学校（小学部）": {"term": 22000, "note": "约2.2万/学期"}, "怀少学校（小学部）": {"term": 15000, "note": "小班化，约1.5万/学期"}, "金洲小学": {"term": 15000, "note": "部分政府购买学位"}, "培佳双语学校": {"term": 18000, "note": "十二年一贯制，政府学位"}};
 var DN={"pudong": "\u6d66\u4e1c", "minhang": "\u95f5\u884c", "xuhui": "\u5f90\u6c47", "changning": "\u957f\u5b81", "jingan": "\u9759\u5b89", "huangpu": "\u9ec4\u6d66", "putuo": "\u666e\u9640", "yangpu": "\u6768\u6d66"};
 var curList=[],statusFlt=null,tierFlt='',typeFlt='',openName=null,myChart=null;
@@ -1079,6 +1155,9 @@ function applyFilters(){
   setTimeout(function(){try{renderChart(curList);}catch(e){}},50);
   /* 静默保存筛选状态 */
   try{saveForm();}catch(e){}
+  /* 如果摇号表格正在显示，同步刷新 */
+  var tc2=document.getElementById('tc2');
+  if(tc2&&tc2.classList.contains('on')){try{renderLtTable(curList);}catch(e){}}
 }
 function setStatus(sf,btn){
   statusFlt=sf;tierFlt='';
@@ -1337,7 +1416,7 @@ function showTab(n){
   /* 手机端：tab1显示卡片，其他tab隐藏 */
   var cards=document.getElementById('school-cards');
   if(cards) cards.style.display=(window.innerWidth<=768?(n===1?'block':'none'):'');
-  if(n===2)setTimeout(function(){try{renderChart(curList);}catch(e){}},50);
+  if(n===2){setTimeout(function(){try{renderChart(curList);}catch(e){}},50);try{renderLtTable(curList);}catch(e){}}
 }
 function renderChart(list){
   // 只展示有中签率数据的学校，按中签率低值排序
@@ -1423,6 +1502,73 @@ function renderChart(list){
     }
   });
 }
+// ===== 中签率表格 =====
+var _ltSortKey='rate', _ltSortAsc=true;
+function showLtTab(tab){
+  var tbl=document.getElementById('lt-tbl-wrap');
+  var chart=document.getElementById('lt-chart-wrap');
+  var btnT=document.getElementById('lt-tab-tbl');
+  var btnC=document.getElementById('lt-tab-chart');
+  if(tab==='tbl'){
+    tbl.style.display='block'; chart.style.display='none';
+    btnT.style.background='#4361ee'; btnT.style.color='#fff'; btnT.style.borderColor='#4361ee';
+    btnC.style.background='#fff'; btnC.style.color='#4361ee'; btnC.style.borderColor='#e0e4ff';
+  } else {
+    tbl.style.display='none'; chart.style.display='block';
+    btnC.style.background='#4361ee'; btnC.style.color='#fff'; btnC.style.borderColor='#4361ee';
+    btnT.style.background='#fff'; btnT.style.color='#4361ee'; btnT.style.borderColor='#e0e4ff';
+    setTimeout(function(){try{renderChart(curList);}catch(e){}},50);
+  }
+}
+function sortLtTable(key){
+  if(_ltSortKey===key){ _ltSortAsc=!_ltSortAsc; }
+  else { _ltSortKey=key; _ltSortAsc=(key==='rate'); }
+  renderLtTable(curList);
+}
+function renderLtTable(list){
+  var tbody=document.getElementById('lt-tbody');
+  if(!tbody)return;
+  var src=(list&&list.length?list:SD);
+  // 合并 SD 数据 + LT 数据
+  var rows=[];
+  src.forEach(function(s){
+    if(s[2]!=='pri')return; // 只展示民办
+    var lt=LT[s[0]]||{};
+    var rec=lt.rec||null;
+    var max=lt.max||null;
+    var rate=lt.rate!=null?lt.rate:(s[9]==='cool'?100:null);
+    rows.push({name:s[0],dist:s[1],rec:rec,max:max,rate:rate,st:s[9]});
+  });
+  // 只展示有录取数或中签率数据的行
+  rows=rows.filter(function(r){return r.rec||r.rate!==null;});
+  // 排序
+  var k=_ltSortKey;
+  rows.sort(function(a,b){
+    var va=a[k]!=null?a[k]:(_ltSortAsc?9999:-9999);
+    var vb=b[k]!=null?b[k]:(_ltSortAsc?9999:-9999);
+    return _ltSortAsc?(va-vb):(vb-va);
+  });
+  var DN2={"pudong":"浦东","minhang":"闵行","xuhui":"徐汇","changning":"长宁","jingan":"静安","huangpu":"黄浦","putuo":"普陀","yangpu":"杨浦","baoshan":"宝山","jiading":"嘉定","qingpu":"青浦","songjiang":"松江","jinshan":"金山","chongming":"崇明","fengxian":"奉贤","minhang":"闵行"};
+  var html='';
+  rows.forEach(function(r,i){
+    var bg=i%2===0?'#fff':'#f8f9ff';
+    var rateStr=r.rate!==null?(r.rate===100?'<span style="color:#27ae60;font-weight:700">🍀全录</span>':r.rate.toFixed(1)+'%'):'<span style="color:#bbb">无</span>';
+    var maxStr=r.max?r.max:'<span style="color:#bbb">无</span>';
+    var recStr=r.rec?r.rec:'<span style="color:#bbb">无</span>';
+    var hotBadge=r.st==='hot'?'<span style="font-size:10px;background:#fff3cd;color:#e67e22;border-radius:4px;padding:1px 4px;margin-left:3px">🌟摇号</span>':'';
+    html+='<tr style="background:'+bg+'">'
+      +'<td style="padding:6px 6px;border-bottom:1px solid #eef0ff">'+r.name+hotBadge+'</td>'
+      +'<td style="padding:6px 6px;text-align:center;border-bottom:1px solid #eef0ff;color:#666;font-size:12px">'+(DN2[r.dist]||r.dist)+'</td>'
+      +'<td style="padding:6px 6px;text-align:center;border-bottom:1px solid #eef0ff">'+recStr+'</td>'
+      +'<td style="padding:6px 6px;text-align:center;border-bottom:1px solid #eef0ff">'+maxStr+'</td>'
+      +'<td style="padding:6px 6px;text-align:center;border-bottom:1px solid #eef0ff;font-weight:600">'+rateStr+'</td>'
+      +'</tr>';
+  });
+  tbody.innerHTML=html||'<tr><td colspan="5" style="text-align:center;color:#999;padding:20px">当前筛选范围内暂无数据</td></tr>';
+}
+
+// ===== 结束：中签率表格 =====
+
 // 保存当前策略参数，用于 pref 变更时刷新
 var _lastStrategyArgs = null;
 
