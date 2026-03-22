@@ -473,9 +473,9 @@ tr:hover>td{background:#fafbff}
         <option value="changning">长宁区</option>
         <option value="jingan">静安区</option>
         <option value="huangpu">黄浦区</option>
+        <option value="hongkou">虹口区</option>
         <option value="putuo">普陀区</option>
         <option value="yangpu">杨浦区</option>
-        <option value="hongkou">虹口区</option>
         <option value="other">其他区</option>
       </select></div>
     </div>
@@ -553,7 +553,9 @@ tr:hover>td{background:#fafbff}
         </div>
       </div>
       <div id="school-cards" style="padding:0 4px"></div>
-      <div class="tc" id="tc2"><div class="chw"><canvas id="ch"></canvas></div></div>
+      <div class="tc" id="tc2">
+        <div id="lt-tbl-wrap"></div>
+      </div>
     </div>
   </div>
 
@@ -1079,7 +1081,39 @@ function showTab(n){
   /* 手机端：tab1显示卡片，其他tab隐藏 */
   var cards=document.getElementById('school-cards');
   if(cards) cards.style.display=(window.innerWidth<=768?(n===1?'block':'none'):'');
-  if(n===2)setTimeout(function(){try{renderChart(curList);}catch(e){}},50);
+  if(n===2){try{renderLtTable(curList);}catch(e){}}
+}
+function renderLtTable(list){
+  var src = (list && list.length ? list : SD);
+  var items = src.filter(function(s){ return s[3] > 0 && s[3] < 100; });
+  items.sort(function(a,b){ return (a[3]||0)-(b[3]||0); });
+  var wrap = document.getElementById('lt-tbl-wrap');
+  if(!wrap) return;
+  if(items.length===0){
+    wrap.innerHTML='<p style="text-align:center;color:#999;padding:20px">当前筛选范围内暂无中签率数据</p>';
+    return;
+  }
+  var html='<table style="width:100%;border-collapse:collapse;font-size:13px">';
+  html+='<thead><tr style="background:#f0f3ff">';
+  html+='<th style="padding:8px 6px;text-align:left;border-bottom:2px solid #e0e4ff">学校名称</th>';
+  html+='<th style="padding:8px 6px;text-align:center;border-bottom:2px solid #e0e4ff;white-space:nowrap">区</th>';
+  html+='<th style="padding:8px 6px;text-align:center;border-bottom:2px solid #e0e4ff;white-space:nowrap">梯队</th>';
+  html+='<th style="padding:8px 6px;text-align:center;border-bottom:2px solid #e0e4ff;white-space:nowrap">中签率</th>';
+  html+='</tr></thead><tbody>';
+  items.forEach(function(s,i){
+    var lo=s[3];
+    var rateStr= lo+'%';
+    var rateColor = lo<30?'#e53e3e':lo<60?'#dd6b20':'#2d6a4f';
+    var bg = i%2===0?'#fff':'#fafbff';
+    html+='<tr style="background:'+bg+'">';
+    html+='<td style="padding:7px 6px;border-bottom:1px solid #f0f0f0">'+s[0]+'</td>';
+    html+='<td style="padding:7px 6px;text-align:center;border-bottom:1px solid #f0f0f0">'+(DN[s[1]]||s[1])+'</td>';
+    html+='<td style="padding:7px 6px;text-align:center;border-bottom:1px solid #f0f0f0">'+(s[10]||'—')+'</td>';
+    html+='<td style="padding:7px 6px;text-align:center;border-bottom:1px solid #f0f0f0;font-weight:700;color:'+rateColor+'">'+rateStr+'</td>';
+    html+='</tr>';
+  });
+  html+='</tbody></table>';
+  wrap.innerHTML=html;
 }
 function renderChart(list){
   // 只展示有中签率数据的学校，按中签率低值排序
@@ -1230,7 +1264,56 @@ function renderStrategy(h,d,r,p){
   var summary='<div style="background:linear-gradient(135deg,#f0f4ff,#faf0ff);border-radius:10px;padding:11px 13px;margin-bottom:10px;border-left:4px solid #667eea">'
     +'<span style="font-size:13px;color:#444">您的情况：<b style="color:#667eea">'+hn+'</b> · <b style="color:#667eea">'+dn+'</b> · <b style="color:#667eea">'+rn+'</b> · 对口公办<b style="color:#667eea">'+pn+'</b></span></div>';
 
-  document.getElementById('stg').innerHTML=summary+stepsHtml+checkHtml;
+  // ===== 推荐学校区块 =====
+  var recHtml='';
+  if(d && d!=='other'){
+    var recList=SD.filter(function(s){
+      if(s[1]!==d) return false;
+      if(s[2]==='pub') return false; // 只推民办
+      // 根据路线偏好过滤
+      if(r==='bi'){
+        // 双语/国际化：优先T1，包含双语关键词
+        var pr=PR[s[0]];
+        if(!pr) return s[10]==='T1';
+        var tag=pr.tag||'';
+        return tag.indexOf('双语')>-1||tag.indexOf('国际')>-1||tag.indexOf('外语')>-1||s[10]==='T1';
+      } else if(r==='tr'){
+        // 传统精英：优先T1
+        var pr=PR[s[0]];
+        if(!pr) return s[10]==='T1';
+        var tag=pr.tag||'';
+        return tag.indexOf('精英')>-1||tag.indexOf('传统')>-1||s[10]==='T1';
+      } else {
+        // 均衡发展：T1+T2都推
+        return s[10]==='T1'||s[10]==='T2';
+      }
+    }).sort(function(a,b){
+      var to={'T1':0,'T2':1,'T3':2};
+      return (to[a[10]]||3)-(to[b[10]]||3);
+    }).slice(0,5);
+
+    if(recList.length>0){
+      recHtml='<div style="margin-top:14px;background:#fff8f0;border-radius:12px;padding:13px 14px;border-left:4px solid #f6933b">';
+      recHtml+='<div style="font-size:14px;font-weight:700;color:#c05e00;margin-bottom:10px">🎯 '+dn+'区中可能适合你的学校</div>';
+      recList.forEach(function(s){
+        var pr=PR[s[0]];
+        var tag=pr?pr.tag:(s[10]||'');
+        var slogan=pr?pr.slogan:s[6];
+        var tierColor=s[10]==='T1'?'#e53e3e':s[10]==='T2'?'#dd6b20':'#999';
+        recHtml+='<div style="padding:8px 0;border-bottom:1px solid #ffe8cc;cursor:pointer" onclick="showDetail(\''+s[0].replace(/'/g,"\\'")+'\')">';
+        recHtml+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">';
+        recHtml+='<a style="font-size:13px;font-weight:600;color:#4361ee;text-decoration:none">'+s[0]+'</a>';
+        recHtml+='<span style="font-size:11px;background:'+tierColor+'20;color:'+tierColor+';border-radius:4px;padding:1px 6px;font-weight:600">'+s[10]+'</span>';
+        if(pr&&pr.tag&&pr.tag.indexOf('双语')>-1) recHtml+='<span style="font-size:11px">🌍双语</span>';
+        recHtml+='</div>';
+        recHtml+='<p style="font-size:12px;color:#666;margin:0;line-height:1.5">'+slogan+'</p>';
+        recHtml+='</div>';
+      });
+      recHtml+='</div>';
+    }
+  }
+
+  document.getElementById('stg').innerHTML=summary+recHtml+stepsHtml+checkHtml;
 }
 
 function renderTimeline(){
