@@ -3,10 +3,10 @@
 ## 项目概述
 
 **项目名称**：上海幼升小择校助手（Shanghai Primary School Advisor）  
-**项目类型**：纯前端单页应用（Single HTML File）  
+**项目类型**：前后端分离（静态前端 + Python API + SQLite）  
 **GitHub 仓库**：`https://github.com/kallenhu1-spec/primary-school-advisor`  
 **线上地址**：`https://kallenhu1-spec.github.io/school-advisor/`  
-**主文件**：`index.html`（与 `school-advisor-v7.6-latest.html` 内容一致）
+**主文件**：`index.html`（当前稳定版入口，版本号见 `VERSION.json`）
 
 ---
 
@@ -23,30 +23,26 @@
 
 ## 技术架构
 
-**技术栈**：纯 HTML + CSS + JavaScript，无框架依赖，无构建工具  
+**技术栈**：HTML + CSS + JavaScript（前端） + Python 标准库 HTTP Server（后端） + SQLite（数据层）  
 **外部库**：Chart.js（内联，用于中签率雷达图/柱状图）  
-**存储**：`localStorage`（保存用户填写的表单状态）  
-**部署**：GitHub Pages（`index.html` 直接托管）
+**存储**：`localStorage`（前端表单状态） + SQLite（服务端学校数据）  
+**部署**：可静态部署前端 + 独立部署后端 API（本地默认 `127.0.0.1:8787`）
 
 ### 文件结构
 
 ```
 primary-school-advisor/
 ├── index.html                          # 主文件，即线上版本
-├── school-advisor-v7.6-latest.html    # 最新稳定版备份
+├── school-advisor-v8.0.0-latest.html  # 最新稳定版备份
+├── school-advisor-v7.6-latest.html    # 历史版本（保留）
 ├── school-advisor-v7.6-20260322-1.html  # 带日期的版本快照
+├── VERSION.json                        # 当前发布版本元数据
+├── backend/                            # 后端 API + 数据脚本
+├── data/                               # SQLite 数据库与种子数据
 ├── versions/                           # 历史版本存档
 │   ├── CHANGELOG.md                   # 版本变更日志
-│   ├── v7.0-base.html
-│   ├── v7.0-20260318.html
-│   ├── v7.1-20260318.html
-│   ├── v7.6-20260319.html
-│   ├── v7.6-20260319-r2.html
-│   ├── v7.6-20260319-r3.html
+│   ├── v8.0.0-20260326.html
 │   └── v7.6-pre-hongkou.html
-├── build_v7.py                        # v7 构建脚本（参考用）
-├── v8_css.css                         # v8 实验版 CSS（未合并）
-├── v8_js.js                           # v8 实验版 JS（未合并）
 └── PROJECT.md                         # 本文件
 ```
 
@@ -134,7 +130,7 @@ Key 为学校名，Value 包含：
 | v7.6 | 2026-03-19 | 推荐卡片样式统一，展开按钮优化，路线策略差异化，大众点评搜索词优化 |
 | v7.6+ | 2026-03-22 | 补充虹口区学校数据，更新 12 所学校中签率为 2025 真实数据 |
 
-**当前稳定版**：v7.6（文件：`index.html`）
+**当前稳定版**：v8.0.0（文件：`index.html`）
 
 ---
 
@@ -151,10 +147,16 @@ Key 为学校名，Value 包含：
 
 ### 如何更新学校数据
 
-1. 在 `index.html` 中搜索 `const schools = [`，找到学校数组
+推荐流程（v8.0.0+）：
+1. 准备包含 `SD/PR/TF/DN` 的 JSON 文件
+2. 执行 `python3 backend/tools/update_bootstrap.py --file /path/to/new-data.json`
+3. 重启后端 API，前端刷新后自动读取新数据
+
+兼容流程（不推荐）：
+1. 在 `index.html` 中搜索 `var SD=`，找到学校数组
 2. 按照现有格式添加或修改学校条目
-3. 对应更新 `const profiles = {` 中的口碑数据
-4. 修改前先把当前 `index.html` 复制到 `versions/` 目录存档（文件名格式：`v7.6-YYYYMMDD-rN.html`）
+3. 对应更新 `var PR=`、`var TF=`、`var DN=` 等结构
+4. 修改前先把当前 `index.html` 复制到 `versions/` 目录存档（文件名格式：`vX.Y.Z-YYYYMMDD[-rN].html`）
 
 ### 如何部署更新
 
